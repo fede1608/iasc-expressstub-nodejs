@@ -6,8 +6,13 @@ app.get('/', function(req, res){
   res.sendfile('index.html');
 });
 
-io.on('connection', function(socket){
-  console.log('a user connected');
+io.on('profesorSeConecta', function(socket){
+  console.log('an alumno se conecta');
+	
+});
+
+io.on('alumnoSeConecta', function(socket){
+  console.log('a profesor se conecta');
 	
 });
 
