@@ -1,29 +1,15 @@
-var express = require('express')
-  , routes = require('./routes')
-  , http = require('http');
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 
-var app = express();
- 
-app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'jade');
-  app.use(express.favicon());
-  app.use(express.logger('dev'));
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
+app.get('/', function(req, res){
+  res.sendfile('index.html');
 });
- 
-app.configure('development', function(){
-  app.use(express.errorHandler());
+
+io.on('connection', function(socket){
+  console.log('a user connected');
 });
- 
-app.get('/', routes.index);
- 
-var server = http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
+
+http.listen(3000, function(){
+  console.log('listening on *:3000');
 });
- 
-var io = require('socket.io').listen(server);
