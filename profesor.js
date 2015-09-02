@@ -25,7 +25,7 @@ var server = app.listen(4000, function () {
 //}
 function produce() {
   console.log('voy');    
-  http.get('http://localhost:3000/profesorSeConecta', function(res){
+  http.get('http://localhost:3000/profesorSeConecta?miPuerto=4000', function(res){
     console.log('hola');
 	    
   });
