@@ -5,12 +5,16 @@ var colors = require('colors');
 var _ = require('underscore');
 var address = 'http://localhost';
 
+var Client = require('node-rest-client').Client;
+client = new Client();
+
 var students = [];
 var professors = [];
 var questions = [];
 
 app.get('/profesorSeConecta', function(req, res){
-  addObserver(('A professor has connected' + req.query.port).blue, professors, req.query.port, res);
+  addObserver(('A professor has connected ' + req.query.port).blue, professors, req.query.port, res);
+
 });
 
 app.get('/alumnoSeConecta', function(req, res){
@@ -18,10 +22,10 @@ app.get('/alumnoSeConecta', function(req, res){
 });
 
 app.get('/alumnoEscribe', function(req, res){
-  console.log(('A student on port ' + req.query.port +' is writing').magenta);
+  console.log(('A student on port ' + req.query.port +' wrote a new question').magenta);
   var question = req.query.question;
   questions.push(question);
-
+  console.log("Unaswered questions: " + questions);
   var stakeholders = professors.concat(students);
 
   for (var i = 0; i < stakeholders.length; i++){
@@ -39,8 +43,21 @@ app.get('/profesorResponde', function(req, res){
   questions = questions.filter(function(i) {
     return i != question;
   });
+  console.log("Unaswered questions: " + questions);
+  var everyone = students.concat(professors);
+  notifyOneByOne("profesonRespondio",{ "question" : question , "answer" : answer},everyone)
+
 	res.send('OK');
 });
+
+function notifyOneByOne(endpoint, params, people){
+  if (people.length == 0) return;
+  var personPort = people.pop();
+  console.log('Person: ' + personPort + ' notified');
+  client.get(make_url(address,personPort)+'/'+endpoint, { parameters: params }, function(){
+    notifyOneByOne(endpoint,params,people);
+  });
+}
 
 var port = 3000;
 app.set('port', port);
@@ -80,4 +97,8 @@ function addObserver(logMessage, observers, port, res){
   }
   console.log('current observers:', observers);
   res.send('OK');
+}
+
+function make_url(host, port){//extraer
+  return host + ':' + port;
 }

@@ -11,10 +11,13 @@ var _ = require('underscore');
 
 var host = 'http://localhost';
 var mailinglist_port = 3000;
-var professor_port = 4000;
+var professor_port = process.env.PORT || 4000;
 var address = make_url(host, mailinglist_port);
 
-var server = app.listen(4000, server_listening);
+var Client = require('node-rest-client').Client;
+client = new Client();
+
+var server = app.listen(professor_port, server_listening);
 
 var questions = [];
 

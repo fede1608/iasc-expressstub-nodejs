@@ -11,10 +11,18 @@ var _ = require('underscore');
 
 var host = 'http://localhost';
 var mailinglist_port = 3000;
-var student_port = 5000;
+var student_port = process.env.PORT || 5000;
 var address = make_url(host, mailinglist_port);
 
-var server = app.listen(5000, server_listening);
+var Client = require('node-rest-client').Client;
+client = new Client();
+
+var server = app.listen(student_port, server_listening);//continuantion
+
+var i = 0;
+var misConsultas = [];
+
+
 
 function server_listening(){
   console.log(('A student is online, listening on port '+ student_port).magenta);
@@ -25,20 +33,30 @@ app.get('/nuevaConsulta', function (req, res) {
   console.log('nueva consulta: ', req.query.question);
 });
 
+app.get('/profesorRespondio', function(req, res) {
+  console.log('profesor respondio: '+req.query.consulta);
+  misConsultas.remove(req.query.consulta);
+  console.log('Mis consultas: ' + question);
+});
+
 function connect() {
   console.log(('Connection with ' + make_url(host, mailinglist_port) + ' in progress').grey);
-  http.get(address+'/alumnoSeConecta?port='+student_port, repeat_call);
+  client.get(address+'/alumnoSeConecta', { parameters: { port : student_port } }, repeat_call);
+  //http.get(address+'/alumnoSeConecta?port='+student_port, repeat_call);
 }
 
 function repeat_call(){
-  setInterval(produce, 5000, 'WhatIsTheMeaningOfLife');
+  setInterval(produce, 10000, 'WhatIsTheMeaningOfLife');
 }
 function produce(question) {
   console.log('Send new query to mailing list on port', student_port);
-  http.get(address+'/alumnoEscribe?port='+student_port+'&question='+question, question_sent);
+  client.get(address+'/alumnoEscribe', { parameters: { port : student_port, question : question+(i++) } }, question_sent);
+  // http.get(address+'/alumnoEscribe?port='+student_port+'&question='+question+(i++), question_sent);
+  misConsultas.push(question); 
+  console.log('Mis consultas: ' + question);
 }
 
-function question_sent(res){
+function question_sent(data, response){
   console.log('The question was sent'.green);
 }
 
