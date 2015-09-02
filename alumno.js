@@ -14,13 +14,6 @@ var mailinglist_port = 3000;
 var student_port = 5000;
 var address = make_url(host, mailinglist_port);
 
-var options = {
-  hostname: 'localhost',
-  port: mailinglist_port,
-  path: '/alumnoSeConecta',
-  method: 'GET'
-};
-
 var server = app.listen(5000, server_listening);
 
 function server_listening(){

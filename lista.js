@@ -22,28 +22,15 @@ app.get('/alumnoSeConecta', function(req, res){
   addObserver(('A student has connected, listening on ' + req.query.port).magenta, students, req.query.port, res);
 });
 
-function addObserver(logMessage, observers, port, res){
-  console.log(logMessage);
-  if(!_.contains(observers, port)){
-    observers.push(port);
-  }
-  console.log('current observers:', observers);
-  res.send('OK');
-}
-
 app.get('/alumnoEscribe', function(req, res){
   console.log(('A student on port ' + req.query.port +' is writing').magenta);
   var consulta = req.query.consulta;//Consulta(data, alumno);
-  for (profesor in professors){
-  	//client.get(address+":"+profesor+"/nuevaConsulta?consulta="+consulta,function(){
+  var stakeholders = professors.concat(students);
 
-  	//});
+  for (stakeholder in stakeholders){
+  	client.get(address+":"+stakeholder+"/nuevaConsulta?consulta="+consulta, notify_done);
   };
-  for (student in students){
-  	//client.get(address+":"+alumno+"/nuevaConsulta?consulta="+consulta,function(){
 
-  	//});
-  };
   res.send('OK');
 });
 
@@ -73,4 +60,17 @@ function normalizePort(val) {
   }
 
   return false;
+}
+
+function notify_done(port){
+  console.log('Notify done');
+}
+
+function addObserver(logMessage, observers, port, res){
+  console.log(logMessage);
+  if(!_.contains(observers, port)){
+    observers.push(port);
+  }
+  console.log('current observers:', observers);
+  res.send('OK');
 }

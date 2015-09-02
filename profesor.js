@@ -6,49 +6,45 @@
 var express = require('express');
 var http = require('http');
 var app = express();
+var colors = require('colors');
+var _ = require('underscore');
 
+var host = 'http://localhost';
+var mailinglist_port = 3000;
+var professor_port = 4000;
+var address = make_url(host, mailinglist_port);
 
+var server = app.listen(4000, server_listening);
 
-app.get('/', function (req, res) {
-  res.send('Hello World!');
-});
-
-var server = app.listen(4000, function () {
-  var host = server.address().address;
-  var port = server.address().port;
-
-  console.log('Example app listening at http://%s:%s', host, port);
-});
-
-//while(true) {
-  produce();
-//}
-function produce() {
-  console.log('voy');    
-  http.get('http://localhost:3000/profesorSeConecta?miPuerto=4000', function(res){
-    console.log('hola');
-	    
-  });
-  //sleep(3000);
+function server_listening(){
+  console.log(('A professor is online, listening on port '+ student_port).blue);
+  connect();
 }
 
-app.get('/nuevaConsulta', function(req, res){
-  console.log('Nueva consulta a un profesor');
-var consulta = req.query.consulta
-console.log('consulta: ' + consulta);
-	res.send('OK');
+app.get('/nuevaConsulta', function (req, res) {
+  console.log('nueva consulta: ', req.query.consulta);
 });
 
+function connect() {
+  console.log('Connection in progress'.grey);
+  http.get(address+'/alumnoSeConecta?port='+student_port, repeat_call);
+}
 
+function repeat_call(){
+  setInterval(consume, 6000, 'NoAnswer');
+}
 
+function consume(answer) {
+  console.log('Send new answer to mailing list on port', professor_port);
+  http.get(address+'/profesorResponde?port='+professor_port+'&answer='+answer, answer_sent);
+}
 
-function sleep(milliseconds) {
-  var start = new Date().getTime();
-  for (var i = 0; i < 1e7; i++) {
-      if ((new Date().getTime() - start) > milliseconds){
-            break;
-          }
-    }
+function answer_sent(res){
+  console.log('The answer was sent'.green);
+}
+
+function make_url(host, port){
+  return host + ':' + port;
 }
 
 
