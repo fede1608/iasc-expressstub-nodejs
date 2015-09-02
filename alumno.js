@@ -27,15 +27,15 @@ var server = app.listen(5000, function () {
 });
 
 
-while(true) {
+//while(true) {
   produce();
-}
+//}
 function produce() {
   console.log('voy');    
   http.get('http://localhost:3000/alumnoSeConecta', function(res){
     console.log('hola');    
   });
-  sleep(3000);
+  //sleep(3000);
 }
 
 function sleep(milliseconds) {

@@ -8,20 +8,20 @@ var consultas = [];
 
 
 app.get('/', function(req, res){
-  res.sendfile('index.html');
+  res.send('Hello');
 });
 
-app.get('/profesorSeConecta', function(data){
+app.get('/profesorSeConecta', function(req, res){
   console.log('an profesor se conecta');
-	
+	res.send('OK');
 });
 
-app.get('/alumnoSeConecta', function(data){
-  console.log('a alumno se conecta');
-	
+app.get('/alumnoSeConecta', function(req, res){
+  console.log('un alumno se conecta');
+	res.send('OK');
 });
 
-app.get('/alumnoEscribe', function(data){
+app.get('/alumnoEscribe', function(req, res){
   console.log('a alumno escribe');
   console.log(data);
   var consulta = Consulta(data, alumno);
@@ -31,12 +31,12 @@ app.get('/alumnoEscribe', function(data){
   for (alumno in alumnos){
   	alumno.socket.emit('nuevaConsulta', consulta);
   };
-
+res.send('OK');
 });
 
 app.get('/profesorResponde', function(data){
-  console.log('a alumno se conecta');
-	
+  console.log('un profesor responde');
+	res.send('OK');
 });
 
 http.listen(3000, function(){
