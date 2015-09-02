@@ -4,9 +4,16 @@
 //==Para más detalles de la API MIRA ACA===
 //==http://expressjs.com/4x/api.html
 var express = require('express');
+var http = require('http');
 var app = express();
-var io = require('socket.io-client');
 
+
+var options = {
+  hostname: 'localhost',
+  port: 3000,
+  path: '/alumnoSeConecta',
+  method: 'GET'
+}
 
 app.get('/', function (req, res) {
   res.send('Hello World!');
@@ -20,17 +27,14 @@ var server = app.listen(5000, function () {
 });
 
 
-
-var socket = io.connect('http://localhost:3000');
-
 while(true) {
   produce();
 }
-
-
 function produce() {
-  socket.emit('mande fruta');
-  console.log('mande una consulta');
+  console.log('voy');    
+  http.get('http://localhost:3000/alumnoSeConecta', function(res){
+    console.log('hola');    
+  });
   sleep(3000);
 }
 
