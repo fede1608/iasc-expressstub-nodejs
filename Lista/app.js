@@ -1,6 +1,9 @@
 var app = require('express')();
 var http = require('http').Server(app);
 
+var client = require('http');
+var address = "http://localhost"
+
 var alumnos = [];
 var profesores = [];
 
@@ -12,24 +15,32 @@ app.get('/', function(req, res){
 });
 
 app.get('/profesorSeConecta', function(req, res){
-  console.log('an profesor se conecta');
+  console.log('Un profesor se conecta');
+  console.log('Port: ' + req.query.port)
+  profesores.push(req.query.port);
 	res.send('OK');
 });
 
 app.get('/alumnoSeConecta', function(req, res){
-  console.log('un alumno se conecta');
+  	console.log('un alumno se conecta');
+    console.log('Port: ' + req.query.port);
+    alumnos.push(req.query.port);
 	res.send('OK');
 });
 
 app.get('/alumnoEscribe', function(req, res){
   console.log('a alumno escribe');
-  console.log(data);
-  var consulta = Consulta(data, alumno);
+  console.log(req.query);
+  var consulta = req.query.consulta;//Consulta(data, alumno);
   for (profesor in profesores){
-  	profesor.socket.emit('nuevaConsulta', consulta);
+  	client.get(address+":"+profesor+"/nuevaConsulta?consulta="+consulta,function(){
+
+  	});
   };
   for (alumno in alumnos){
-  	alumno.socket.emit('nuevaConsulta', consulta);
+  	client.get(address+":"+alumno+"/nuevaConsulta?consulta="+consulta,function(){
+
+  	});
   };
 res.send('OK');
 });
