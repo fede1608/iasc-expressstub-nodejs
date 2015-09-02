@@ -32,8 +32,7 @@ function addObserver(logMessage, observers, port, res){
 }
 
 app.get('/alumnoEscribe', function(req, res){
-  console.log('a alumno escribe');
-  console.log(req.query);
+  console.log(('A student on port ' + req.query.port +' is writing').magenta);
   var consulta = req.query.consulta;//Consulta(data, alumno);
   for (profesor in professors){
   	//client.get(address+":"+profesor+"/nuevaConsulta?consulta="+consulta,function(){

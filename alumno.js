@@ -6,48 +6,49 @@
 var express = require('express');
 var http = require('http');
 var app = express();
+var colors = require('colors');
+var _ = require('underscore');
 
+var host = 'http://localhost';
+var mailinglist_port = 3000;
+var student_port = 5000;
+var address = make_url(host, mailinglist_port);
 
 var options = {
   hostname: 'localhost',
-  port: 3000,
+  port: mailinglist_port,
   path: '/alumnoSeConecta',
   method: 'GET'
-}
+};
 
-app.get('/', function (req, res) {
-  res.send('Hello World!');
-});
+var server = app.listen(5000, server_listening);
+
+function server_listening(){
+  console.log(('A student is online, listening on port '+ student_port).magenta);
+  connect();
+}
 
 app.get('/nuevaConsulta', function (req, res) {
   console.log('nueva consulta: ', req.query.consulta);
 });
 
-
-
-var server = app.listen(5000, function () {
-  var host = server.address().address;
-  var port = server.address().port;
-
-  console.log('Example app listening at http://%s:%s', host, port);
-});
-
-connect();
-
-var interval = setInterval(produce(), 1000);
-clearInterval(interval);
-
 function connect() {
-  console.log('me conecto');
-  http.get('http://localhost:3000/alumnoSeConecta?port=5000', function(res){
-    console.log('me conecte');
-  });
+  console.log('Connection in progress'.grey);
+  http.get(address+'/alumnoSeConecta?port='+student_port, repeat_call);
 }
 
-function produce() {
-  console.log('envio una consulta');    
-  http.get('http://localhost:3000/alumnoEscribe?port=5000&consulta=unaconsulta', function(res){
-    console.log('la consulta fue enviada');    
-  });
+function repeat_call(){
+  setInterval(produce, 5000, 'WhatIsTheMeaningOfLife');
+}
+function produce(query) {
+  console.log('Send new query to mailing list on port', student_port);
+  http.get(address+'/alumnoEscribe?port='+student_port+'&consulta='+query, query_sent);
 }
 
+function query_sent(res){
+  console.log('The query was sent'.green);
+}
+
+function make_url(host, port){
+  return host + ':' + port;
+}
