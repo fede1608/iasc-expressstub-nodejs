@@ -9,6 +9,8 @@
   "author": "",
   "license": "BSD 3.0",
   "dependencies": {
-    "express": "^4.13.3"
+    "colors": "^1.1.2",
+    "express": "^4.13.3",
+    "underscore": "^1.8.3"
   }
 }
