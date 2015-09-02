@@ -19,6 +19,12 @@ app.get('/', function (req, res) {
   res.send('Hello World!');
 });
 
+app.get('/nuevaConsulta', function (req, res) {
+  console.log('nueva consulta: ', req.query.consulta);
+});
+
+
+
 var server = app.listen(5000, function () {
   var host = server.address().address;
   var port = server.address().port;
