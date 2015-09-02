@@ -34,9 +34,15 @@ app.get('/nuevaConsulta', function (req, res) {
 });
 
 app.get('/profesorRespondio', function(req, res) {
-  console.log('profesor respondio: '+req.query.consulta);
-  misConsultas.remove(req.query.consulta);
-  console.log('Mis consultas: ' + question);
+  console.log('profesor respondio: '+req.query.question);
+  //misConsultas.remove(req.query.question);
+  misConsultas = misConsultas.filter(function(i) {
+    if(i == req.query.question){
+      console.log(i + " removida de mis consultas.");
+    }
+    return i != req.query.question;
+  });
+  console.log('Mis consultas: ' + misConsultas);
 });
 
 function connect() {
@@ -46,14 +52,15 @@ function connect() {
 }
 
 function repeat_call(){
-  setInterval(produce, 10000, 'WhatIsTheMeaningOfLife');
+  setInterval(produce, 10000, 'WhatIsTheMeaningOfLife-'+student_port+'-');
 }
 function produce(question) {
   console.log('Send new query to mailing list on port', student_port);
-  client.get(address+'/alumnoEscribe', { parameters: { port : student_port, question : question+(i++) } }, question_sent);
+  var currentQuestion = question+(i++)
+  client.get(address+'/alumnoEscribe', { parameters: { port : student_port, question : currentQuestion } }, question_sent);
   // http.get(address+'/alumnoEscribe?port='+student_port+'&question='+question+(i++), question_sent);
-  misConsultas.push(question); 
-  console.log('Mis consultas: ' + question);
+  misConsultas.push(currentQuestion); 
+  console.log('Mis consultas: ' + misConsultas);
 }
 
 function question_sent(data, response){

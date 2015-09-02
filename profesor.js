@@ -32,6 +32,16 @@ app.get('/nuevaConsulta', function (req, res) {
   enqueu_question(question);
 });
 
+app.get('/profesorRespondio', function(req, res) {
+  console.log('profesor respondio: '+req.query.question);
+  questions = questions.filter(function(i) {
+    if(i == req.query.question){
+      console.log(i + " removida de mis consultas.");
+    }
+    return i != req.query.question;
+  });
+});
+
 function connect() {
   console.log('Connection in progress'.grey);
   http.get(address+'/profesorSeConecta?port='+professor_port, listening_for_questions);

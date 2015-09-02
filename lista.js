@@ -14,7 +14,7 @@ var questions = [];
 
 app.get('/profesorSeConecta', function(req, res){
   addObserver(('A professor has connected ' + req.query.port).blue, professors, req.query.port, res);
-
+  notifyAllPost(req.query.port,questions);
 });
 
 app.get('/alumnoSeConecta', function(req, res){
@@ -22,16 +22,16 @@ app.get('/alumnoSeConecta', function(req, res){
 });
 
 app.get('/alumnoEscribe', function(req, res){
-  console.log(('A student on port ' + req.query.port +' wrote a new question').magenta);
   var question = req.query.question;
+  console.log(('A student on port ' + req.query.port +' wrote a new question: question').magenta);
   questions.push(question);
   console.log("Unaswered questions: " + questions);
   var stakeholders = professors.concat(students);
-
-  for (var i = 0; i < stakeholders.length; i++){
-    endpoint_string = address+":"+stakeholders[i]+"/nuevaConsulta?question="+question, notify_done;
-  	client.get(endpoint_string);
-  };
+  notifyOneByOne("nuevaConsulta",{ "question" : question },stakeholders)
+  //for (var i = 0; i < stakeholders.length; i++){
+    //endpoint_string = address+":"+stakeholders[i]+"/nuevaConsulta?question="+question, notify_done;
+  	//client.get(endpoint_string);
+  //};
 
   res.send('OK');
 });
@@ -45,18 +45,34 @@ app.get('/profesorResponde', function(req, res){
   });
   console.log("Unaswered questions: " + questions);
   var everyone = students.concat(professors);
-  notifyOneByOne("profesonRespondio",{ "question" : question , "answer" : answer},everyone)
+  notifyOneByOne("profesorRespondio",{ "question" : question , "answer" : answer},everyone)
 
 	res.send('OK');
 });
 
-function notifyOneByOne(endpoint, params, people){
-  if (people.length == 0) return;
+function notifyAllPost(port,posts){
+  if (posts.length==0) return;
+  var post = posts.pop();
+  console.log('Person: ' + port + ' notified of question: '+post);
+  notifyOneByOne("nuevaConsulta",{ "question" : post },[port],function(){
+    
+  });
+  notifyAllPost(port,posts);
+}
+
+function notifyOneByOne(endpoint, params, people, callWhenFinished){
+  if (people.length == 0) {
+    console.log('notifyOneByOne has callWhenFinished')
+    callWhenFinished();
+    return;
+  }
   var personPort = people.pop();
   console.log('Person: ' + personPort + ' notified');
-  client.get(make_url(address,personPort)+'/'+endpoint, { parameters: params }, function(){
-    notifyOneByOne(endpoint,params,people);
+  client.get(make_url(address,personPort)+'/'+endpoint, { parameters: params }, function(data,res){
+    
   });
+
+  notifyOneByOne(endpoint,params,people,callWhenFinished || function(){});
 }
 
 var port = 3000;
