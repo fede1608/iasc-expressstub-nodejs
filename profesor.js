@@ -34,6 +34,8 @@ function produce() {
 
 app.get('/nuevaConsulta', function(req, res){
   console.log('Nueva consulta a un profesor');
+var consulta = req.query.consulta
+console.log('consulta: ' + consulta);
 	res.send('OK');
 });
 
