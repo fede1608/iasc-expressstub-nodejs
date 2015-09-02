@@ -27,18 +27,18 @@ function produce() {
   console.log('voy');    
   http.get('http://localhost:3000/profesorSeConecta', function(res){
     console.log('hola');
-consulta();	    
+	    
   });
   //sleep(3000);
 }
 
-function consulta(){
-
-app.get('/nuevaConsulta', function (req, res) {
-  res.send('respuestaAPregunta');
+app.get('/nuevaConsulta', function(req, res){
+  console.log('Nueva consulta a un profesor');
+	res.send('OK');
 });
 
-}
+
+
 
 function sleep(milliseconds) {
   var start = new Date().getTime();
