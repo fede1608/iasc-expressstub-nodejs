@@ -22,24 +22,24 @@ function server_listening(){
 }
 
 app.get('/nuevaConsulta', function (req, res) {
-  console.log('nueva consulta: ', req.query.consulta);
+  console.log('nueva consulta: ', req.query.question);
 });
 
 function connect() {
-  console.log('Connection in progress'.grey);
+  console.log(('Connection with ' + make_url(host, mailinglist_port) + ' in progress').grey);
   http.get(address+'/alumnoSeConecta?port='+student_port, repeat_call);
 }
 
 function repeat_call(){
   setInterval(produce, 5000, 'WhatIsTheMeaningOfLife');
 }
-function produce(query) {
+function produce(question) {
   console.log('Send new query to mailing list on port', student_port);
-  http.get(address+'/alumnoEscribe?port='+student_port+'&consulta='+query, query_sent);
+  http.get(address+'/alumnoEscribe?port='+student_port+'&question='+question, question_sent);
 }
 
-function query_sent(res){
-  console.log('The query was sent'.green);
+function question_sent(res){
+  console.log('The question was sent'.green);
 }
 
 function make_url(host, port){

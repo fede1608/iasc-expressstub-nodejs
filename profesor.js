@@ -16,27 +16,38 @@ var address = make_url(host, mailinglist_port);
 
 var server = app.listen(4000, server_listening);
 
+var questions = [];
+
 function server_listening(){
-  console.log(('A professor is online, listening on port '+ student_port).blue);
+  console.log(('A professor is online, listening on port '+ professor_port).blue);
   connect();
 }
 
 app.get('/nuevaConsulta', function (req, res) {
-  console.log('nueva consulta: ', req.query.consulta);
+  var question = req.query.question;
+  console.log('nueva consulta: ', question);
+  enqueu_question(question);
 });
 
 function connect() {
   console.log('Connection in progress'.grey);
-  http.get(address+'/alumnoSeConecta?port='+student_port, repeat_call);
+  http.get(address+'/profesorSeConecta?port='+professor_port, listening_for_questions);
 }
 
-function repeat_call(){
+function enqueu_question(question){
+  questions.push(question);
+}
+
+function listening_for_questions(){
   setInterval(consume, 6000, 'NoAnswer');
 }
 
 function consume(answer) {
-  console.log('Send new answer to mailing list on port', professor_port);
-  http.get(address+'/profesorResponde?port='+professor_port+'&answer='+answer, answer_sent);
+  if(questions.length > 0){
+    var question = questions.pop();
+    console.log('Send new answer to mailing list on port', professor_port);
+    http.get(address+'/profesorResponde?port='+professor_port+'&question='+question+'&answer='+answer, answer_sent);
+  }
 }
 
 function answer_sent(res){
