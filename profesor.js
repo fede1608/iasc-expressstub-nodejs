@@ -1,18 +1,20 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
-var io = require('socket.io-client');
 
-    //#1 Declaramos el objeto socket que se conectará en este caso a localhost
-    var socket = io.connect('127.0.0.1', {
-    port: 3000
+
+http.get("http://localhost:3000/profesorSeConecta", function(res) {
+  console.log("Got response: " + res.statusCode);
+}).on('error', function(e) {
+  console.log("Got error: " + e.message);
 });
-	socket.emit('profesorSeConecta'); 
 
- 
-//    //#3 Si estamos conectados, muestra el log y cambia el mensaje
-//    socket.on('connected', function () {
-//      console.log('Conectado!');
-//      
-//      });
- 
+
+
+
+
+
+
+
+
 
