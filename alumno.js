@@ -32,7 +32,7 @@ var server = app.listen(5000, function () {
 //}
 function produce() {
   console.log('voy');    
-  http.get('http://localhost:3000/alumnoSeConecta', function(res){
+  http.get('http://localhost:3000/alumnoSeConecta?miPuerto=5000', function(res){
     console.log('hola');    
   });
   //sleep(3000);
