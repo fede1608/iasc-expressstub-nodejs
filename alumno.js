@@ -26,25 +26,22 @@ var server = app.listen(5000, function () {
   console.log('Example app listening at http://%s:%s', host, port);
 });
 
+connect();
 
-//while(true) {
-  produce();
-//}
-function produce() {
-  console.log('voy');    
-  http.get('http://localhost:3000/alumnoSeConecta?miPuerto=5000', function(res){
-    console.log('hola');    
+var interval = setInterval(produce(), 1000);
+clearInterval(interval);
+
+function connect() {
+  console.log('me conecto');
+  http.get('http://localhost:3000/alumnoSeConecta?port=5000', function(res){
+    console.log('me conecte');
   });
-  //sleep(3000);
 }
 
-function sleep(milliseconds) {
-  var start = new Date().getTime();
-  for (var i = 0; i < 1e7; i++) {
-      if ((new Date().getTime() - start) > milliseconds){
-            break;
-          }
-    }
+function produce() {
+  console.log('envio una consulta');    
+  http.get('http://localhost:3000/alumnoEscribe?port=5000&consulta=unaconsulta', function(res){
+    console.log('la consulta fue enviada');    
+  });
 }
-
 
