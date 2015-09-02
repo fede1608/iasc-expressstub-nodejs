@@ -33,14 +33,14 @@ app.get('/alumnoEscribe', function(req, res){
   console.log(req.query);
   var consulta = req.query.consulta;//Consulta(data, alumno);
   for (profesor in profesores){
-  	client.get(address+":"+profesor+"/nuevaConsulta?consulta="+consulta,function(){
+  	//client.get(address+":"+profesor+"/nuevaConsulta?consulta="+consulta,function(){
 
-  	});
+  	//});
   };
   for (alumno in alumnos){
-  	client.get(address+":"+alumno+"/nuevaConsulta?consulta="+consulta,function(){
+  	//client.get(address+":"+alumno+"/nuevaConsulta?consulta="+consulta,function(){
 
-  	});
+  	//});
   };
 res.send('OK');
 });
