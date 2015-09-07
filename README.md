@@ -15,12 +15,9 @@ PORT=4003 nodejs profesor.js
 ```
 
 
-Dependencias
+Antes de correr primero instalar dependencias
 ```
-npm install express
-npm install colors
-
-
+npm install
 ```
 
 La documentación sobre Express esta en este [link](http://expressjs.com/guide/routing.html). 
