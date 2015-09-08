@@ -45,7 +45,7 @@ function produce(question) {
     }
   }, question_sent);
   misConsultas.push(currentQuestion);
-  console.log('Mis consultas: ' + misConsultas);
+  console.log(('My pending questions: ' + misConsultas).magenta);
 }
 
 function question_sent(data, response) {
@@ -57,17 +57,17 @@ function make_url(host, port) {
 }
 
 app.get('/nuevaConsulta', function(req, res) {
-  console.log('nueva consulta: ', req.query.question);
+  console.log(('New question: '+ req.query.question).gray);
 });
 
-app.get('/profesorRespondio', function(req, res) {
-  console.log('profesor respondio: ' + req.query.question);
-  //misConsultas.remove(req.query.question);
+app.get('/profesorResponde', function(req, res) {
+  console.log(('A professor has answered: ' + req.query.question).blue);
+
   misConsultas = misConsultas.filter(function(i) {
     if (i == req.query.question) {
-      console.log(i + " removida de mis consultas.");
+      console.log((i + " has been removed from my questions.").magenta);
     }
     return i != req.query.question;
   });
-  console.log('Mis consultas: ' + misConsultas);
+  console.log(('My pending questions: ' + misConsultas).magenta);
 });
