@@ -130,18 +130,8 @@ function make_url(host, port) { //extraer
 }
 
 function validate_answer(req, res, continuation) {
-  var question = {
-    id_profesor: req.query.port,
-    question: req.query.question,
-    answer: req.query.answer
-  };
-  var question_found = _.find(questions, function(q) {
-    return q.question == req.query.question && q.id_profesor !== null && q.id_profesor !== req.query.port;
-  });
-  if (question_found) {
-    console.log(('A professor on port ' + question.id_profesor + ' attempted to answer an already answered/reserved question').orange);
-    res.send('already-taken');
-  } else {
+
+  var contOK = function(question, continuation){
     var q = _.find(questions, function(elem) {
       return elem.question == question.question;
     });
@@ -150,6 +140,27 @@ function validate_answer(req, res, continuation) {
     }else{
       res.send('already-taken');
     }
+  };
+
+  var contError = function(question){
+    console.log(('A professor on port ' + question.id_profesor + ' attempted to answer an already answered/reserved question').orange);
+    res.send('already-taken');
+  };
+
+  var question = {
+    id_profesor: req.query.port,
+    question: req.query.question,
+    answer: req.query.answer
+  };
+
+  var question_found = _.find(questions, function(q) {
+    return q.question == req.query.question && q.id_profesor !== null && q.id_profesor !== req.query.port;
+  });
+
+  if (question_found) {
+    contError(question);
+  } else {
+    contOK(question, continuation);
   }
 }
 
