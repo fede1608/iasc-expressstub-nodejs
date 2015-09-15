@@ -70,6 +70,7 @@ app.get('/profesorResponde', function(req, res) {
   var continuation = function(req, res, question) {
 
     console.log(('A professor on port ' + question.id_profesor + ' for question: ' + question.question + ', has answered: ' + req.query.answer).blue);
+    
     questions = questions.filter(function(i) {
       return i.question != question.question;
     });
@@ -165,7 +166,7 @@ function validate_answer(req, res, continuation) {
 }
 
 function notifyAllPost(port, posts) {
-  if (posts.length !== 0) {
+  var hayPosts = function (posts){
     var post = posts.pop();
     console.log('Person: ' + port + ' notified of question: ' + post.question);
     notifyOneByOne("nuevaConsulta", {
@@ -173,19 +174,28 @@ function notifyAllPost(port, posts) {
     }, [port], function() {});
     notifyAllPost(port, posts);
   }
+
+  if (posts.length !== 0) {
+    hayPosts(posts);
+  }
 }
 
+
 function notifyOneByOne(endpoint, params, people, callWhenFinished) {
-  if (people.length === 0) {
-    console.log('notifyOneByOne has callWhenFinished');
-    callWhenFinished();
-    return;
-  } else {
+  var notificar = function (people,callWhenFinished){
     var personPort = people.pop();
     console.log('Person: ' + personPort + ' notified');
     client.get(make_url(address, personPort) + '/' + endpoint, {
       parameters: params
     }, function(data, res) {});
     notifyOneByOne(endpoint, params, people, callWhenFinished || function() {});
+  }
+
+  if (people.length === 0) {
+    console.log('notifyOneByOne has callWhenFinished');
+    callWhenFinished();
+    return;
+  } else {
+    notificar(people,callWhenFinished);    
   }
 }
