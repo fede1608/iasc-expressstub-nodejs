@@ -61,11 +61,14 @@ app.get('/nuevaConsulta', function(req, res) {
 });
 
 app.get('/profesorResponde', function(req, res) {
+  var cont = function(i){
+    console.log((i + " has been removed from my questions.").magenta);
+  }
   console.log(('A professor has answered: ' + req.query.question).blue);
 
   misConsultas = misConsultas.filter(function(i) {
     if (i == req.query.question) {
-      console.log((i + " has been removed from my questions.").magenta);
+      cont(i);
     }
     return i != req.query.question;
   });

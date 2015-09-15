@@ -49,15 +49,20 @@ app.get('/profesorEscribe', function(req, res) {
       return p !== req.query.port;
     });
 
+    var contOK = function(question, stakeholders, notified){
+      notifyOneByOne("profesorEscribe", {
+        "question": question.question
+      }, stakeholders, notified);
+    }
+
     var notified = function() {
       console.log(("All has been notified that the professor on port " + question.id_profesor + " is writing for question: " + question.question).cyan);
     };
 
     if (stakeholders) {
-      notifyOneByOne("profesorEscribe", {
-        "question": question.question
-      }, stakeholders, notified);
+      contOK(question, stakeholders, notified);
     }
+
     console.log(('A professor on port ' + req.query.port + ' is writing for: ' + req.query.question).blue);
     res.send(question.question);
   };
@@ -70,7 +75,7 @@ app.get('/profesorResponde', function(req, res) {
   var continuation = function(req, res, question) {
 
     console.log(('A professor on port ' + question.id_profesor + ' for question: ' + question.question + ', has answered: ' + req.query.answer).blue);
-    
+
     questions = questions.filter(function(i) {
       return i.question != question.question;
     });
@@ -118,10 +123,16 @@ function notify_done(res) {
 }
 
 function addObserver(logMessage, observers, port, res) {
-  console.log(logMessage);
-  if (!_.contains(observers, port)) {
+  var cont = function(observers, port){
     observers.push(port);
   }
+
+  console.log(logMessage);
+
+  if (!_.contains(observers, port)) {
+    cont(observers, port);
+  }
+
   console.log('current observers:', observers);
   res.send('OK');
 }
@@ -196,6 +207,6 @@ function notifyOneByOne(endpoint, params, people, callWhenFinished) {
     callWhenFinished();
     return;
   } else {
-    notificar(people,callWhenFinished);    
+    notificar(people,callWhenFinished);
   }
 }

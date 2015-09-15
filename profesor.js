@@ -38,9 +38,14 @@ app.get('/profesorEscribe', function(req, res) {
 });
 
 function remove_from_questions(question) {
+
+  var cont = function(i){
+    console.log((i + " has been removed from my questions.").cyan);
+  }
+
   questions = questions.filter(function(i) {
     if (i == question) {
-      console.log((i + " has been removed from my questions.").cyan);
+      cont(i);
     }
     return i != question;
   });
@@ -55,32 +60,53 @@ function enqueu_question(question) {
   questions.push(question);
 }
 
-function listening_for_questions() {
-  setInterval(consume, 6000);
-}
-
 function consume() {
-  if (questions.length > 0) {
+  var cont_consume = function(){
     var question = questions.pop();
     console.log('Send new answer to mailing list on port', professor_port);
     http.get(address + '/profesorEscribe?port=' + professor_port + '&question=' + question, reserve_question);
   }
+
+  if (questions.length > 0) {
+    cont_consume();
+  }
+}
+
+function listening_for_questions() {
+  setInterval(consume, 6000);
 }
 
 function reserve_question(res) {
   var log = "Got response: " + res.statusCode;
-  if (res.statusCode !== 200)
+
+  var contOK = function(log, data){
+    console.log((log + ", the question: " + data + " has been granted").green);
+    var answer = 'You will find the meaning of life in you.';
+    http.get(address + '/profesorResponde?port=' + professor_port + '&question=' + data + '&answer=' + answer, answer_sent);
+  }
+
+  var contErr = function(){
+    console.log("The question has been reserved for another professor".red);
+  }
+
+  var bad_response = function(log){
     console.log((log + ". Ups! An error happened on mailing list").red);
-  else {
+  }
+
+  var response_ok = function(log, contOK, contErr){
     res.on("data", function(data) {
       if (data != 'already-reserved') {
-        console.log((log + ", the question: " + data + " has been granted").green);
-        var answer = 'You will find the meaning of life in you.';
-        http.get(address + '/profesorResponde?port=' + professor_port + '&question=' + data + '&answer=' + answer, answer_sent);
+        contOK(log, data);
       } else {
-        console.log("The question has been reserved for another professor".red);
+        contErr();
       }
     });
+  }
+
+  if (res.statusCode !== 200)
+    bad_response(log);
+  else {
+    response_ok(log, contOK, contErr);
   }
 }
 
