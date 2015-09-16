@@ -3,7 +3,7 @@ var http = require('http');
 var app = express();
 var colors = require('colors');
 var _ = require('underscore');
-
+var Promise = require('bluebird');
 var host = 'http://localhost';
 var mailinglist_port = 3000;
 var professor_port = process.env.PORT || 4000;
@@ -85,7 +85,7 @@ function reserve_question(res) {
     http.get(address + '/profesorResponde?port=' + professor_port + '&question=' + data + '&answer=' + answer, answer_sent);
   }
 
-  var contErr = function(){
+  var contErr = function(e){
     console.log("The question has been reserved for another professor".red);
   }
 
@@ -93,20 +93,23 @@ function reserve_question(res) {
     console.log((log + ". Ups! An error happened on mailing list").red);
   }
 
-  var response_ok = function(log, contOK, contErr){
-    res.on("data", function(data) {
-      if (data != 'already-reserved') {
-        contOK(log, data);
-      } else {
-        contErr();
-      }
-    });
-  }
+  var response_ok = function(log){
+      var resolver = Promise.pending();
+      res.on("data", function(data) {
+        if (data != 'already-reserved') {
+          resolver.resolve(log, data);
+        } else {
+          resolver.reject('');
+        }
+      });
+
+      return resolver.promise;
+    }
 
   if (res.statusCode !== 200)
     bad_response(log);
   else {
-    response_ok(log, contOK, contErr);
+    response_ok(log).then(contOK).catch(contErr);
   }
 }
 
